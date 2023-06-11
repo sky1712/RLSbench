@@ -157,7 +157,7 @@ def initialize_model(
     elif model_name in ("MLP"):
         featurizer = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(10, 100, bias=True),
+            nn.Linear(3072, 100, bias=True),
             nn.ReLU(),
             nn.Linear(100, 100, bias=True),
             nn.ReLU(),

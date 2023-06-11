@@ -73,7 +73,7 @@ def get_cifar10(
     CIFAR10 = dataset_with_targets(torchvision.datasets.CIFAR10)
 
     if source or (target and target_split == 0):
-        trainset = CIFAR10(root=root_dir, train=True, download=False, transform=None)
+        trainset = CIFAR10(root=root_dir, train=True, download=True, transform=None)
 
         source_train_idx, source_test_idx = split_idx(
             trainset.y_array, num_classes, source_frac=0.8, seed=seed
