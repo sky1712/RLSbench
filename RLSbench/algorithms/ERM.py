@@ -91,6 +91,7 @@ class ERM(SingleModelAlgorithm):
         outputs = self.get_model_output(x)
 
         results = {"y_true": y_true, "y_pred": outputs}
+        trainAccu = torch.sum(torch.argmax(outputs, dim=1) == y_true).item() / len(y_true)
         if unlabeled_batch is not None:
             if self.use_unlabeled_y:  # expect loaders to return x,y,m
                 x, y = unlabeled_batch[:2]
@@ -108,7 +109,7 @@ class ERM(SingleModelAlgorithm):
         if self.source_balanced and source_marginal is not None:
             results["source_marginal"] = torch.tensor(source_marginal).to(self.device)
 
-        return results
+        return results, trainAccu
 
     def objective(self, results):
         labeled_loss = self.loss(results["y_pred"], results["y_true"])

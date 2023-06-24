@@ -180,11 +180,12 @@ def run_epoch(
     # so we manually increment batch_idx
     batch_idx = 0
     train_y_pred = []
+    averageTrainAccu = 0
     for labeled_batch in iterator:
         if unlabeled_dataloader:
             unlabeled_batch = next(unlabeled_data_iterator)
 
-            results = algorithm.update(
+            results, trainAccu = algorithm.update(
                 labeled_batch,
                 unlabeled_batch,
                 target_marginal=estimated_marginal[f"{config.estimation_method}"],
@@ -198,15 +199,16 @@ def run_epoch(
 
         else:
             algorithm.update(labeled_batch, is_epoch_end=(batch_idx == last_batch_idx))
-
+        averageTrainAccu += trainAccu
         batch_idx += 1
+    averageTrainAccu = averageTrainAccu / len(iterator)
 
     if len(train_y_pred) > 0:
         train_y_pred = collate_list(train_y_pred).detach().cpu().numpy()
         # train_y_pred = np.argmax(train_y_pred, axis=1)
         target_average = calculate_marginal(train_y_pred, config.num_classes)
 
-        return target_average
+        return target_average, averageTrainAccu
 
     else:
         return None
@@ -250,7 +252,7 @@ def train(algorithm, dataloaders, results_logger, config, epoch_offset, datasets
         # import pdb; pdb.set_trace()
         # First run training
         if "target_train" in dataloaders:
-            target_average = run_epoch(
+            target_average, trainAccu = run_epoch(
                 algorithm,
                 dataloaders["source_train"],
                 config,
@@ -259,7 +261,7 @@ def train(algorithm, dataloaders, results_logger, config, epoch_offset, datasets
                 estimated_marginal=estimated_marginal,
             )
         else:
-            target_average = run_epoch(
+            target_average, trainAccu = run_epoch(
                 algorithm,
                 dataloaders["source_train"],
                 config,
@@ -269,7 +271,7 @@ def train(algorithm, dataloaders, results_logger, config, epoch_offset, datasets
 
         if (epoch + 1) % config.evaluate_every == 0:
             _, estimated_marginal = evaluate(
-                algorithm, dataloaders, epoch + 1, results_logger, config
+                algorithm, dataloaders, trainAccu, epoch + 1, results_logger, config
             )
 
         estimated_marginal["target_average"] = target_average
@@ -293,7 +295,7 @@ def train(algorithm, dataloaders, results_logger, config, epoch_offset, datasets
         logger.info(f"Epoch {epoch+1} done.")
 
 
-def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
+def evaluate(algorithm, dataloaders, trainAccu, epoch, results_logger, config, log=True):
     algorithm.eval()
     torch.set_grad_enabled(False)
 
@@ -330,7 +332,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
 
             ytrue[dataset_name] = epoch_y_true
             model_preds[dataset_name] = epoch_y_preds
-
+    results["trainAccu"] = trainAccu
     results["epoch"] = epoch
     results["source_acc"] = get_acc(model_preds["source"], ytrue["source"])
 
