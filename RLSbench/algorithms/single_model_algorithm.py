@@ -104,7 +104,7 @@ class SingleModelAlgorithm(Algorithm):
         # self.optimizer.zero_grad()
 
         # process this batch
-        results, trainAccu = self.process_batch(
+        results = self.process_batch(
             batch, unlabeled_batch, target_marginal, source_marginal, target_average
         )
 
@@ -118,7 +118,7 @@ class SingleModelAlgorithm(Algorithm):
 
         self._update(results)
 
-        return results, trainAccu
+        return results
 
     def _update(self, results):
         """

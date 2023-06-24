@@ -109,7 +109,7 @@ class ERM(SingleModelAlgorithm):
         if self.source_balanced and source_marginal is not None:
             results["source_marginal"] = torch.tensor(source_marginal).to(self.device)
 
-        return results, trainAccu
+        return results
 
     def objective(self, results):
         labeled_loss = self.loss(results["y_pred"], results["y_true"])

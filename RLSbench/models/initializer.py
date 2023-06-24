@@ -157,14 +157,27 @@ def initialize_model(
     elif model_name in ("MLP"):
         featurizer = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(3072, 100, bias=True),
+            nn.Linear(3072, 512, bias=True),
             nn.ReLU(),
-            nn.Linear(100, 100, bias=True),
+            nn.Linear(512, 512, bias=True),
             nn.ReLU(),
+            nn.Linear(512, 512, bias=True),
+            nn.ReLU(),
+            nn.Linear(512, 512, bias=True),
+            nn.ReLU(),
+            nn.Linear(512, 512, bias=True),
         )
+        # featurizer = nn.Sequential(
+        #     nn.Flatten(),
+        #     nn.Linear(3072, 100, bias=True),
+        #     nn.ReLU(),
+        #     nn.Linear(100, 100, bias=True),
+        #     nn.ReLU(),
+        #     nn.Linear(100, 100, bias=True),
+        # )
 
-        featurizer.d_out = 100
-        classifier = nn.Linear(100, num_classes)
+        featurizer.d_out = 512
+        classifier = nn.Linear(512, num_classes)
 
         model = (featurizer, classifier)
 
