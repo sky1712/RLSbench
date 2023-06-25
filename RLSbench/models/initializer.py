@@ -160,12 +160,6 @@ def initialize_model(
             nn.Linear(3072, 512, bias=True),
             nn.ReLU(),
             nn.Linear(512, 512, bias=True),
-            nn.ReLU(),
-            nn.Linear(512, 512, bias=True),
-            nn.ReLU(),
-            nn.Linear(512, 512, bias=True),
-            nn.ReLU(),
-            nn.Linear(512, 512, bias=True),
         )
         # featurizer = nn.Sequential(
         #     nn.Flatten(),
