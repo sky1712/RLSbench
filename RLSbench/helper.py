@@ -304,7 +304,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
     estimated_marginal = {}
 
     for dataset in dataloaders:
-        if dataset.endswith("test") or dataset=='source_train':
+        if dataset.endswith("test") or dataset=='source_train' or dataset == 'source_train_val':
             dataset_name = dataset
             if dataset.endswith("test"):
                 dataset_name = dataset.split("_")[0]

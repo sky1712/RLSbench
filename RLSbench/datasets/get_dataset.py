@@ -83,6 +83,10 @@ def get_cifar10(
             trainset, source_train_idx, transform=transforms["source_train"]
         )
 
+        source_valset = Subset(
+            trainset, source_train_idx, transform=transforms["source_test"]
+        )
+
         source_testset = Subset(
             trainset, source_test_idx, transform=transforms["source_test"]
         )
@@ -163,12 +167,14 @@ def get_cifar10(
     datasets = {}
     if source and target:
         datasets["source_train"] = source_trainset
+        datasets["source_train_val"] = source_valset
         datasets["source_test"] = source_testset
         datasets["target_train"] = target_trainset
         datasets["target_test"] = target_testset
 
     elif source:
         datasets["source_train"] = source_trainset
+        datasets["source_train_val"] = source_valset
         datasets["source_test"] = source_testset
 
     elif target:

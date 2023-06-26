@@ -613,6 +613,15 @@ def main(config):
             collate_fn=collate_function,
         )
 
+        dataloaders['source_train_val'] = DataLoader(
+            full_dataset['source_train_val'],
+            batch_size=config.batch_size,
+            shuffle=False,
+            num_workers=config.num_workers,
+            pin_memory=True,
+            collate_fn=collate_function
+        )
+
         dataloaders["source_test"] = DataLoader(
             full_dataset["source_test"],
             batch_size=config.batch_size,
