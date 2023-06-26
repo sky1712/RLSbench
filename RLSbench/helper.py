@@ -334,6 +334,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
     results["epoch"] = epoch
     results["source_acc"] = get_acc(model_preds["source"], ytrue["source"])
     results['source_train_acc'] = get_acc(model_preds["source_train"], ytrue["source_train"])
+    results['source_train_val_acc'] = get_acc(model_preds["source_train_val"], ytrue["source_train_val"])
 
     # import pdb; pdb.set_trace()
     if config.use_target:
