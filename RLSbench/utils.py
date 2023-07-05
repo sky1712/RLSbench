@@ -277,7 +277,7 @@ def load(module, path, device=None, tries=2):
     if device is not None:
         state = torch.load(path, map_location=device)
     else:
-        state = torch.load(path, map_location=torch.device('cpu'))
+        state = torch.load(path)
 
     if "algorithm" in state:
         prev_epoch = state["epoch"]
