@@ -75,7 +75,7 @@ for dataset in DATASETS:
                     gpu_id = GPU_IDS[counter % NUM_GPUS]
 
                     cmd = f"CUDA_VISIBLE_DEVICES={gpu_id} python3 run_main.py --remote False \
-                    --dataset {dataset} --root_dir /home/sgarg2/data --seed {seed} \
+                    --dataset {dataset} --root_dir ../ --seed {seed} \
                     --transform image_none --algorithm  {algorithm}  --dirichlet_alpha {alpha} \
                     --target_split {target_set} --use_target True  --simulate_label_shift True"
 
