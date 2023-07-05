@@ -53,7 +53,7 @@ TARGET_SETS = {
 SEEDS = ["1234", "2023"]
 ALPHA = ["0.5", "100.0"]
 ALGORITHMS = [
-    ERM-aug,
+    "ERM-aug",
     # "DANN",
     # "IW-DANN",
     # "IW-CDANN",
