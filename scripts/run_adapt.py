@@ -20,22 +20,22 @@ NUM_GPUS = len(GPU_IDS)
 counter = 0
 
 DATASETS = [
-    "domainnet",
-    "camelyon",
+    # "domainnet",
+    # "camelyon",
     # # 'iwildcam',
-    "fmow",
+    # "fmow",
     "cifar10",
-    "cifar100",
-    "entity13",
-    "entity30",
-    "living17",
-    "nonliving26",
-    "office31",
-    "officehome",
-    "visda",
+    # "cifar100",
+    # "entity13",
+    # "entity30",
+    # "living17",
+    # "nonliving26",
+    # "office31",
+    # "officehome",
+    # "visda",
 ]
 TARGET_SETS = {
-    "cifar10": ["0", "1", "10", "23", "57", "71", "95"],
+    "cifar10": ["0", "1", "6", "16", "36", "96"],
     "cifar100": ["0", "4", "12", "43", "59", "82"],
     "fmow": ["0", "1", "2"],
     "iwildcams": ["0", "1", "2"],
@@ -50,17 +50,18 @@ TARGET_SETS = {
     "visda": ["0", "1", "2"],
 }
 
-SEEDS = ["1234", "42"]
-ALPHA = ["0.5", "1.0", "3.0", "10.0", "100.0"]
+SEEDS = ["1234", "2023"]
+ALPHA = ["0.5", "100.0"]
 ALGORITHMS = [
-    "DANN",
-    "IW-DANN",
-    "IW-CDANN",
+    ERM-aug,
+    # "DANN",
+    # "IW-DANN",
+    # "IW-CDANN",
     "FixMatch",
-    "CDANN",
-    "SENTRY",
-    "IS-DANN",
-    "IS-CDANN",
+    # "CDANN",
+    # "SENTRY",
+    # "IS-DANN",
+    # "IS-CDANN",
     "IS-FixMatch",
 ]
 
