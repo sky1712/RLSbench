@@ -71,7 +71,7 @@ def initialize_model(
             assert (
                 pretrained_path is not None
             ), "Must provide pretrained_path if pretrained=True"
-            load(featurizer, pretrained_path)
+            load(featurizer, pretrained_path, map_location=torch.device('cpu'))
 
         d_out = getattr(featurizer, "linear").in_features
         featurizer.d_out = d_out
