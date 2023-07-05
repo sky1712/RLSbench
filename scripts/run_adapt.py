@@ -74,9 +74,9 @@ for dataset in DATASETS:
                 for target_set in TARGET_SETS[dataset]:
                     gpu_id = GPU_IDS[counter % NUM_GPUS]
 
-                    cmd = f"CUDA_VISIBLE_DEVICES={gpu_id} python3 run_main.py --remote False \
-                    --dataset {dataset} --root_dir ../ --seed {seed} \
-                    --transform image_none --algorithm  {algorithm}  --dirichlet_alpha {alpha} \
+                    cmd = f"CUDA_VISIBLE_DEVICES={gpu_id} python3 run_main.py
+                    --dataset {dataset} --root_dir ./ --seed {seed} \
+                    --algorithm  {algorithm}  --dirichlet_alpha {alpha} \
                     --target_split {target_set} --use_target True  --simulate_label_shift True"
 
                     print(cmd)
