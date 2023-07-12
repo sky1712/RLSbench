@@ -75,10 +75,10 @@ for dataset in DATASETS:
                     gpu_id = GPU_IDS[counter % NUM_GPUS]
 
                     cmd = f"CUDA_VISIBLE_DEVICES={gpu_id} python3 run_main.py \
-                    --dataset {dataset} --root_dir ./ --seed {seed} \
+                    --dataset {dataset} --root_dir ./resnet --seed {seed} \
                     --algorithm  {algorithm}  --dirichlet_alpha {alpha} \
                     --target_split {target_set} --use_target True  --simulate_label_shift True \
-                    --n_epochs=50 --lr=0.01 --model=MLP"
+                    --n_epochs=50 --lr=0.01"
 
                     print(cmd)
                     procs.append(Popen(cmd, shell=True))
