@@ -75,7 +75,7 @@ for dataset in DATASETS:
                     gpu_id = GPU_IDS[counter % NUM_GPUS]
 
                     cmd = f"CUDA_VISIBLE_DEVICES={gpu_id} python3 run_main.py \
-                    --dataset {dataset} --root_dir ./resnet --seed {seed} \
+                    --dataset {dataset} --root_dir ./ --log_dir=./logs_resnet --seed {seed} \
                     --algorithm  {algorithm}  --dirichlet_alpha {alpha} \
                     --target_split {target_set} --use_target True  --simulate_label_shift True \
                     --n_epochs=50 --lr=0.01"
