@@ -50,7 +50,7 @@ TARGET_SETS = {
     "visda": ["0", "1", "2"],
 }
 
-SEEDS = ["1234", "2023"]
+SEEDS = ["3687", "5980"]
 ALPHA = ["0.5", "100.0"]
 ALGORITHMS = [
     "ERM-aug",
