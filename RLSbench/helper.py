@@ -333,8 +333,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
                 if len(inds) > 0:
                     ypreds = epoch_y_preds[inds]
                     avg = np.mean(ypreds, axis=0)
-                    dist = np.sum(np.abs(avg - ypreds), axis=0)
-                    dist = np.mean(dist)
+                    dist = np.mean(np.abs(avg - ypreds), axis=0)
                     logger.info(f"Label {i} L1 avg dist: {dist}")
                     # find l2 average distance
                     dist = np.mean(np.square(avg - ypreds), axis=0)**0.5
@@ -372,6 +371,16 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
 
             epoch_y_preds = collate_list(epoch_y_preds).cpu().numpy()
             epoch_y_true = collate_list(epoch_y_true).cpu().numpy()
+
+            for i in range(max(epoch_y_true)):
+                # compute accuracy for each label
+                inds = np.where(epoch_y_true == i)
+                if len(inds) > 0:
+                    ypreds = epoch_y_preds[inds]
+                    ypred_Label = np.argmax(ypreds, axis=1)
+                    ytrue_Label = epoch_y_true[inds]
+                    acc = np.sum(ypred_Label == ytrue_Label) / len(ypred_Label)
+                    logger.info(f"Label {i} acc: {acc}")
 
             ytrue[dataset_name] = epoch_y_true
             model_preds[dataset_name] = epoch_y_preds
