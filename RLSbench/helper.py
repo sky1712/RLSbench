@@ -328,7 +328,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
             epoch_y_true = collate_list(epoch_y_true).cpu().numpy()
 
             # for each label in true find the l1 distance between predictions and average of predictions
-            for i in range(epoch_y_true.shape[1]):
+            for i in range(max(epoch_y_true)):
                 inds = np.where(epoch_y_true[:, i] == 1)[0]
                 if len(inds) > 0:
                     ypreds = epoch_y_preds[inds]
