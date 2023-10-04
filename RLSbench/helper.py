@@ -304,6 +304,50 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
     estimated_marginal = {}
 
     for dataset in dataloaders:
+        if dataset.endswith("test"):
+            dataset_name = dataset.split("_")[0]
+            logger.info(f"BREAKING ST on {dataset_name}...")
+
+            epoch_y_true = []
+            epoch_y_preds = []
+
+            iterator = (
+                tqdm(dataloaders[dataset])
+                if config.progress_bar
+                else dataloaders[dataset]
+            )
+
+            for batch in iterator:
+                batch_results = algorithm.evaluate(batch)
+                epoch_y_true.append(detach_and_clone(batch_results["y_true"]))
+                y_preds = detach_and_clone(batch_results["y_pred"])
+
+                epoch_y_preds.append(y_preds)
+
+            epoch_y_preds = collate_list(epoch_y_preds).cpu().numpy()
+            epoch_y_true = collate_list(epoch_y_true).cpu().numpy()
+
+            # for each label in true find the l1 distance between predictions and average of predictions
+            for i in range(epoch_y_true.shape[1]):
+                inds = np.where(epoch_y_true[:, i] == 1)[0]
+                if len(inds) > 0:
+                    ypreds = epoch_y_preds[inds]
+                    avg = np.mean(ypreds, axis=0)
+                    dist = np.sum(np.abs(avg - ypreds), axis=0)
+                    dist = np.mean(dist)
+                    logger.info(f"Label {i} L1 avg dist: {dist}")
+                    # find l2 average distance
+                    dist = np.mean(np.square(avg - ypreds), axis=0)**0.5
+                    logger.info(f"Label {i} L2 avg dist: {dist}")
+                    # find l3 average distance
+                    dist = np.mean(np.power(np.abs(avg - ypreds), 3), axis=0)**(1/3)
+                    logger.info(f"Label {i} L3 avg dist: {dist}")
+                    # find l4 average distance
+                    dist = np.mean(np.power(np.abs(avg - ypreds), 4), axis=0)**(1/4)
+                    logger.info(f"Label {i} L4 avg dist: {dist}")
+            
+            
+
         if dataset.endswith("test") or dataset=='source_train' or dataset == 'source_train_val':
             dataset_name = dataset
             if dataset.endswith("test"):
