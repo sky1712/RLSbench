@@ -329,7 +329,7 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
 
             # for each label in true find the l1 distance between predictions and average of predictions
             for i in range(max(epoch_y_true)):
-                inds = np.where(epoch_y_true[:, i] == 1)[0]
+                inds = np.where(epoch_y_true == i)
                 if len(inds) > 0:
                     ypreds = epoch_y_preds[inds]
                     avg = np.mean(ypreds, axis=0)
