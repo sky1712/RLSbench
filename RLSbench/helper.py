@@ -333,16 +333,20 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
                 if len(inds) > 0:
                     ypreds = epoch_y_preds[inds]
                     avg = np.mean(ypreds, axis=0)
-                    dist = np.mean(np.abs(avg - ypreds), axis=0)
+                    dist = np.sum(np.abs(avg - ypreds), axis=1)
+                    dist = np.mean(dist)
                     logger.info(f"Label {i} L1 avg dist: {dist}")
                     # find l2 average distance
-                    dist = np.mean(np.square(avg - ypreds), axis=0)**0.5
+                    dist = np.mean(np.square(avg - ypreds), axis=1)
+                    dist = np.mean(dist)**(1/2)
                     logger.info(f"Label {i} L2 avg dist: {dist}")
                     # find l3 average distance
-                    dist = np.mean(np.power(np.abs(avg - ypreds), 3), axis=0)**(1/3)
+                    dist = np.mean(np.power(np.abs(avg - ypreds), 3), axis=1)
+                    dist = np.mean(dist)**(1/3)
                     logger.info(f"Label {i} L3 avg dist: {dist}")
                     # find l4 average distance
-                    dist = np.mean(np.power(np.abs(avg - ypreds), 4), axis=0)**(1/4)
+                    dist = np.mean(np.power(np.abs(avg - ypreds), 4), axis=1)
+                    dist = np.mean(dist)**(1/4)
                     logger.info(f"Label {i} L4 avg dist: {dist}")
 
                     ypred_Label = np.argmax(ypreds, axis=1)
