@@ -48,6 +48,12 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
         target_model_probs, config.num_classes
     )
     try:
+        BBSE_ydist = BBSE(
+            source_model_probs, ytrue["source"], target_model_probs, config.num_classes
+        )
+    except:
+        BBSE_ydist = pred_ydist
+    try:
         MLLS_ydist = MLLS(
             source_model_probs, ytrue["source"], target_model_probs, config.num_classes
         )
@@ -64,11 +70,13 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
 
     estimated_marginal[f"{prefix}source"] = source_ydist
     estimated_marginal[f"{prefix}baseline"] = pred_ydist
+    estimated_marginal[f"{prefix}BBSE"] = BBSE_ydist
     estimated_marginal[f"{prefix}MLLS"] = MLLS_ydist
     estimated_marginal[f"{prefix}RLLS"] = RLLS_ydist
     estimated_marginal[f"{prefix}true"] = target_ydist
 
     logger.debug(f"Baseline prediction {pred_ydist}")
+    logger.debug(f"BBSE prediction {BBSE_ydist}")
     logger.debug(f"MLLS prediction {MLLS_ydist}")
     logger.debug(f"RLLS prediction {RLLS_ydist}")
     logger.debug(f"True prediction {target_ydist}")
@@ -84,6 +92,9 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
     results[f"{prefix}target_acc_baseline"] = im_reweight_acc(
         pred_ydist / source_ydist, target_model_probs, ytrue["target"]
     )
+    results[f"{prefix}target_acc_BBSE"] = im_reweight_acc(
+        BBSE_ydist / source_ydist, target_model_probs, ytrue["target"]
+    )
     results[f"{prefix}target_acc_MLLS"] = im_reweight_acc(
         MLLS_ydist / source_ydist, target_model_probs, ytrue["target"]
     )
@@ -92,6 +103,7 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
     )
 
     results[f"{prefix}baseline_AE"] = np.sum(np.abs(pred_ydist - target_ydist))
+    results[f"{prefix}BBSE_AE"] = np.sum(np.abs(BBSE_ydist - target_ydist))
     results[f"{prefix}MLLS_AE"] = np.sum(np.abs(MLLS_ydist - target_ydist))
     results[f"{prefix}RLLS_AE"] = np.sum(np.abs(RLLS_ydist - target_ydist))
 
@@ -101,6 +113,9 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
     )
     results[f"{prefix}target_acc_baseline"] = im_reweight_acc(
         pred_ydist, target_model_probs, ytrue["target"]
+    )
+    results[f"{prefix}target_acc_BBSE"] = im_reweight_acc(
+        BBSE_ydist, target_model_probs, ytrue["target"]
     )
     results[f"{prefix}target_acc_MLLS"] = im_reweight_acc(
         MLLS_ydist, target_model_probs, ytrue["target"]
@@ -304,55 +319,55 @@ def evaluate(algorithm, dataloaders, epoch, results_logger, config, log=True):
     estimated_marginal = {}
 
     for dataset in dataloaders:
-        if dataset.endswith("test"):
-            dataset_name = dataset.split("_")[0]
-            logger.info(f"BREAKING ST on {dataset_name}...")
+        # if dataset.endswith("test"):
+        #     dataset_name = dataset.split("_")[0]
+        #     logger.info(f"BREAKING ST on {dataset_name}...")
 
-            epoch_y_true = []
-            epoch_y_preds = []
+        #     epoch_y_true = []
+        #     epoch_y_preds = []
 
-            iterator = (
-                tqdm(dataloaders[dataset])
-                if config.progress_bar
-                else dataloaders[dataset]
-            )
+        #     iterator = (
+        #         tqdm(dataloaders[dataset])
+        #         if config.progress_bar
+        #         else dataloaders[dataset]
+        #     )
 
-            for batch in iterator:
-                batch_results = algorithm.evaluate(batch)
-                epoch_y_true.append(detach_and_clone(batch_results["y_true"]))
-                y_preds = detach_and_clone(batch_results["y_pred"])
+        #     for batch in iterator:
+        #         batch_results = algorithm.evaluate(batch)
+        #         epoch_y_true.append(detach_and_clone(batch_results["y_true"]))
+        #         y_preds = detach_and_clone(batch_results["y_pred"])
 
-                epoch_y_preds.append(y_preds)
+        #         epoch_y_preds.append(y_preds)
 
-            epoch_y_preds = collate_list(epoch_y_preds).cpu().numpy()
-            epoch_y_true = collate_list(epoch_y_true).cpu().numpy()
+        #     epoch_y_preds = collate_list(epoch_y_preds).cpu().numpy()
+        #     epoch_y_true = collate_list(epoch_y_true).cpu().numpy()
+# 
+            # # for each label in true find the l1 distance between predictions and average of predictions
+            # for i in range(max(epoch_y_true)+1):
+            #     inds = np.where(epoch_y_true == i)
+            #     if len(inds) > 0:
+            #         ypreds = epoch_y_preds[inds]
+            #         avg = np.mean(ypreds, axis=0)
+            #         dist = np.sum(np.abs(avg - ypreds), axis=1)
+            #         dist = np.mean(dist)
+            #         logger.info(f"Label {i} L1 avg dist: {dist}")
+            #         # find l2 average distance
+            #         dist = np.mean(np.square(avg - ypreds), axis=1)
+            #         dist = np.mean(dist)**(1/2)
+            #         logger.info(f"Label {i} L2 avg dist: {dist}")
+            #         # find l3 average distance
+            #         dist = np.mean(np.power(np.abs(avg - ypreds), 3), axis=1)
+            #         dist = np.mean(dist)**(1/3)
+            #         logger.info(f"Label {i} L3 avg dist: {dist}")
+            #         # find l4 average distance
+            #         dist = np.mean(np.power(np.abs(avg - ypreds), 4), axis=1)
+            #         dist = np.mean(dist)**(1/4)
+            #         logger.info(f"Label {i} L4 avg dist: {dist}")
 
-            # for each label in true find the l1 distance between predictions and average of predictions
-            for i in range(max(epoch_y_true)+1):
-                inds = np.where(epoch_y_true == i)
-                if len(inds) > 0:
-                    ypreds = epoch_y_preds[inds]
-                    avg = np.mean(ypreds, axis=0)
-                    dist = np.sum(np.abs(avg - ypreds), axis=1)
-                    dist = np.mean(dist)
-                    logger.info(f"Label {i} L1 avg dist: {dist}")
-                    # find l2 average distance
-                    dist = np.mean(np.square(avg - ypreds), axis=1)
-                    dist = np.mean(dist)**(1/2)
-                    logger.info(f"Label {i} L2 avg dist: {dist}")
-                    # find l3 average distance
-                    dist = np.mean(np.power(np.abs(avg - ypreds), 3), axis=1)
-                    dist = np.mean(dist)**(1/3)
-                    logger.info(f"Label {i} L3 avg dist: {dist}")
-                    # find l4 average distance
-                    dist = np.mean(np.power(np.abs(avg - ypreds), 4), axis=1)
-                    dist = np.mean(dist)**(1/4)
-                    logger.info(f"Label {i} L4 avg dist: {dist}")
-
-                    ypred_Label = np.argmax(ypreds, axis=1)
-                    ytrue_Label = epoch_y_true[inds]
-                    acc = np.sum(ypred_Label == ytrue_Label) / len(ypred_Label)
-                    logger.info(f"Label {i} acc: {acc}")
+            #         ypred_Label = np.argmax(ypreds, axis=1)
+            #         ytrue_Label = epoch_y_true[inds]
+            #         acc = np.sum(ypred_Label == ytrue_Label) / len(ypred_Label)
+            #         logger.info(f"Label {i} acc: {acc}")
             
             
 
