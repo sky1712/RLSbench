@@ -263,7 +263,8 @@ def BBSE(ypred_source, ytrue_source, ypred_target, numClasses):
     ).reshape((numClasses))
     wt_soft[wt_soft < 0] = 0.0
 
-    return np.multiply(wt_soft, py_true_source), np.multiply(wt_hard, py_true_source)
+    return np.multiply(wt_hard, py_true_source)
+    # return np.multiply(wt_soft, py_true_source), np.multiply(wt_hard, py_true_source)
 
 
 def MLLS(ypred_source, ytrue_source, ypred_target, numClasses):
