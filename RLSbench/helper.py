@@ -102,10 +102,10 @@ def target_eval(model_preds, results, estimated_marginal, config, ytrue, cal=Non
         RLLS_ydist / source_ydist, target_model_probs, ytrue["target"]
     )
 
-    results[f"{prefix}baseline_AE"] = np.sum(np.abs(pred_ydist - target_ydist))
-    results[f"{prefix}BBSE_AE"] = np.sum(np.abs(BBSE_ydist - target_ydist))
-    results[f"{prefix}MLLS_AE"] = np.sum(np.abs(MLLS_ydist - target_ydist))
-    results[f"{prefix}RLLS_AE"] = np.sum(np.abs(RLLS_ydist - target_ydist))
+    results[f"{prefix}baseline_AE"] = np.sum(np.square(pred_ydist - target_ydist))
+    results[f"{prefix}BBSE_AE"] = np.sum(np.square(BBSE_ydist - target_ydist))
+    results[f"{prefix}MLLS_AE"] = np.sum(np.square(MLLS_ydist - target_ydist))
+    results[f"{prefix}RLLS_AE"] = np.sum(np.square(RLLS_ydist - target_ydist))
 
     prefix = "mul"
     results[f"{prefix}target_acc_oracle"] = im_reweight_acc(
